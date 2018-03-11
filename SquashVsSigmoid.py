@@ -11,7 +11,6 @@ def sigmoid(x: float) -> float:
 
 def squash(s: np.ndarray) -> np.ndarray:
     magnitude2 = (s ** 2).sum()
-    print(magnitude2)
     if magnitude2 == 0:
         return np.array([0, 0])
     return (magnitude2 / (1 + magnitude2)) * (s/sqrt(magnitude2))
