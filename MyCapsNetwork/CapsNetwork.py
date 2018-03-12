@@ -75,7 +75,7 @@ class CapsNetwork(object):
         return caps2_output_round_2
 
     def predict(self):
-        y_proba = self.safe_norm(self.caps2_output, axis=2, name="y_proba")
+        y_proba = self.safe_norm(self.caps2_output, axis=-2, name="y_proba")
         y_proba_argmax = tf.argmax(y_proba, axis=2, name="y_proba_argmax")
         return tf.squeeze(y_proba_argmax, axis=[1, 2], name="y_pred")
 
@@ -200,6 +200,16 @@ class CapsNetwork(object):
             acc_test = np.mean(acc_tests)
             print("\rFinal test accuracy: {:.4f}%  Loss: {:.6f}".format(
                 acc_test * 100, loss_test))
+
+    def predict_and_reconstruct(self, x):
+        with tf.Session() as sess:
+            self.saver.restore(sess, self.checkpoint_path)
+            caps2_output_value, decoder_output_value, y_pred_value = sess.run(
+                [self.caps2_output, self.decoder.decoder_output, self.y_pred],
+                feed_dict={self._X_raw: x,
+                           self.y: np.array([], dtype=np.int64)})
+
+        return caps2_output_value, decoder_output_value, y_pred_value
 
     @staticmethod
     def squash(s, axis=-1, epsilon=1e-7, name=None):
