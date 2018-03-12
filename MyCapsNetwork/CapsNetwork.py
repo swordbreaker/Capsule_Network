@@ -19,14 +19,17 @@ class CapsNetwork(object):
     m_minus = 0.1
     lambda_ = 0.5
 
-    #final loss
+    # final loss
     alpha = 0.0005
 
-    def __init__(self, X: tf.Tensor, X_raw: tf.Tensor, checkpoint_path: str):
+    def __init__(self, X: tf.Tensor, X_raw: tf.Tensor, checkpoint_path: str, **options):
+
         self._X_raw = X_raw
         self.checkpoint_path = checkpoint_path
         caps1_output = self.squash(X, name="caps1_output")
-        W_init = tf.random_normal(shape=(1, self.caps1_caps, self.caps2_caps, self.caps2_vec_length, self.caps1_vec_length), stddev=self.init_sigma, dtype=tf.float32, name="W_init")
+        W_init = tf.random_normal(
+            shape=(1, self.caps1_caps, self.caps2_caps, self.caps2_vec_length, self.caps1_vec_length),
+            stddev=self.init_sigma, dtype=tf.float32, name="W_init")
         W = tf.Variable(W_init, name="W")
         self.batch_size = tf.shape(caps1_output)[0]
         W_tiled = tf.tile(W, [self.batch_size, 1, 1, 1, 1], name="W_tiled")
@@ -47,11 +50,39 @@ class CapsNetwork(object):
         self.init = tf.global_variables_initializer()
         self.saver = tf.train.Saver()
 
+    def apply_options(self, options: {str}):
+        # primary capsules
+        self.caps1_maps = self.get_or_default(options, 'caps1_maps', 32)
+        self.caps1_caps = self.get_or_default(options, 'caps1_caps', self.caps1_maps * 6 * 6)
+        self.caps1_vec_length = self.get_or_default(options, 'caps1_vec_length', 8)
+
+        # digit capsules
+        self.caps2_caps = self.get_or_default(options, 'caps2_caps', 10)
+        self.caps2_vec_length = self.get_or_default(options, 'caps2_vec_length', 16)
+
+        self.init_sigma = self.get_or_default(options, 'init_sigma', 0.1)
+
+        # margin loss
+        self.m_plus = self.get_or_default(options, 'm_plus', 0.9)
+        self.m_minus = self.get_or_default(options, 'm_minus', 0.1)
+        self.lambda_ = self.get_or_default(options, 'lambda_', 0.5)
+
+        # final loss
+        self.alpha = self.get_or_default(options, 'alpha', 0.005)
+
+    @staticmethod
+    def get_or_default(options: {str}, key: str, default):
+        if key in options:
+            return options[key]
+        else:
+            return default
+
     def routing_by_agreement(self):
         # TODO make a loop
 
         # 2: b_ij
-        raw_weigts = tf.zeros([self.batch_size, self.caps1_caps, self.caps2_caps, 1, 1], dtype=np.float32, name="raw_weights")
+        raw_weigts = tf.zeros([self.batch_size, self.caps1_caps, self.caps2_caps, 1, 1], dtype=np.float32,
+                              name="raw_weights")
         # 4: c_i = softmax(b_i)
         routing_weights = tf.nn.softmax(raw_weigts, dim=2, name="routing_weights")
         # 5: sum c_ij * û_j|i
@@ -61,15 +92,17 @@ class CapsNetwork(object):
         caps2_output_round_1 = self.squash(weighted_sum, axis=2, name="caps2_output_round_1")
 
         # 7: agreement = û_j|i dot v_j
-        caps2_output_round_1_tiled = tf.tile(caps2_output_round_1, [1, self.caps1_caps, 1, 1, 1], name="caps2_output_round_1_tiled")
+        caps2_output_round_1_tiled = tf.tile(caps2_output_round_1, [1, self.caps1_caps, 1, 1, 1],
+                                             name="caps2_output_round_1_tiled")
         agreement = tf.matmul(self.caps2_predicted, caps2_output_round_1_tiled, transpose_a=True, name="agreement")
         # 7: b_j|i = b_ij + agreement
         raw_weights_round_2 = tf.add(raw_weigts, agreement, name="raw_weights_round_2")
 
-
         routing_weights_round_2 = tf.nn.softmax(raw_weights_round_2, dim=2, name="routing_weights_round_2")
-        weighted_predictions_round_2 = tf.multiply(routing_weights_round_2, self.caps2_predicted, name="weighted_predictions_round_2")
-        weighted_sum_round_2 = tf.reduce_sum(weighted_predictions_round_2, axis=1, keep_dims=True, name="weighted_sum_round_2")
+        weighted_predictions_round_2 = tf.multiply(routing_weights_round_2, self.caps2_predicted,
+                                                   name="weighted_predictions_round_2")
+        weighted_sum_round_2 = tf.reduce_sum(weighted_predictions_round_2, axis=1, keep_dims=True,
+                                             name="weighted_sum_round_2")
         caps2_output_round_2 = self.squash(weighted_sum_round_2, axis=-2, name="caps2_output_round_2")
 
         return caps2_output_round_2
@@ -102,7 +135,6 @@ class CapsNetwork(object):
     def build_optimizer(self):
         optimizer = tf.train.AdamOptimizer()
         return optimizer.minimize(self.loss, name="training_op")
-
 
     def loop_example(self):
         def condition(input, counter):
@@ -176,7 +208,7 @@ class CapsNetwork(object):
                     save_path = self.saver.save(sess, self.checkpoint_path)
                     best_loss_val = loss_val
 
-    def eval(self, mnist, batch_size = 50):
+    def eval(self, mnist, batch_size=50):
         n_iterations_test = mnist.test.num_examples // batch_size
 
         with tf.Session() as sess:

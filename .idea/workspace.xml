@@ -2,19 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3dad98ae-3c6f-4635-bf6c-9d4cc9a98ab8" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/Other/Margin_loss.py" />
-      <change beforePath="$PROJECT_DIR$/.idea/Workspace.iml" afterPath="$PROJECT_DIR$/.idea/Workspace.iml" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/Main.py" afterPath="$PROJECT_DIR$/Main.py" />
       <change beforePath="$PROJECT_DIR$/MyCapsNetwork/CapsNetwork.py" afterPath="$PROJECT_DIR$/MyCapsNetwork/CapsNetwork.py" />
-      <change beforePath="$PROJECT_DIR$/Other/Softmax.py" afterPath="$PROJECT_DIR$/Other/Softmax.py" />
-      <change beforePath="$PROJECT_DIR$/SimpleCapsuleNetwork.py" afterPath="$PROJECT_DIR$/Other/SimpleCapsuleNetwork.py" />
-      <change beforePath="$PROJECT_DIR$/SquashVsSigmoid.py" afterPath="$PROJECT_DIR$/Other/SquashVsSigmoid.py" />
-      <change beforePath="$PROJECT_DIR$/checkpoint" afterPath="$PROJECT_DIR$/checkpoint" />
-      <change beforePath="$PROJECT_DIR$/my_capsule_network.data-00000-of-00001" afterPath="$PROJECT_DIR$/my_capsule_network.data-00000-of-00001" />
-      <change beforePath="$PROJECT_DIR$/my_capsule_network.index" afterPath="$PROJECT_DIR$/my_capsule_network.index" />
-      <change beforePath="$PROJECT_DIR$/my_capsule_network.meta" afterPath="$PROJECT_DIR$/my_capsule_network.meta" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -32,7 +22,7 @@
     <SUITE FILE_PATH="coverage/Capsule_Network$SquashVsSigmoid.coverage" NAME="SquashVsSigmoid Coverage Results" MODIFIED="1520809073384" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Workspace$SimpleCapsuleNetwork.coverage" NAME="SimpleCapsuleNetwork Coverage Results" MODIFIED="1520773881087" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Workspace$Main.coverage" NAME="Main Coverage Results" MODIFIED="1520799916172" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/MyCapsNetwork" />
-    <SUITE FILE_PATH="coverage/Capsule_Network$Main_.coverage" NAME="Main  Coverage Results" MODIFIED="1520856869675" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Capsule_Network$Main_.coverage" NAME="Main  Coverage Results" MODIFIED="1520879310995" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
@@ -66,13 +56,13 @@
       <file leaf-file-name="CapsNetwork.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/MyCapsNetwork/CapsNetwork.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="474">
-              <caret line="156" column="52" lean-forward="true" selection-start-line="156" selection-start-column="52" selection-end-line="156" selection-end-column="52" />
+            <state relative-caret-position="483">
+              <caret line="183" column="43" lean-forward="true" selection-start-line="183" selection-start-column="43" selection-end-line="183" selection-end-column="43" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
-                <marker date="1520860821417" expanded="true" signature="6770:7012" ph="..." />
-                <marker date="1520860821417" expanded="true" signature="7689:7894" ph="..." />
-                <marker date="1520860821417" expanded="true" signature="9152:9333" ph="..." />
+                <marker date="1520879270630" expanded="true" signature="8051:8293" ph="..." />
+                <marker date="1520879270630" expanded="true" signature="8970:9175" ph="..." />
+                <marker date="1520879270630" expanded="true" signature="10431:10612" ph="..." />
               </folding>
             </state>
           </provider>
@@ -93,7 +83,7 @@
       <file leaf-file-name="Main.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="432">
+            <state relative-caret-position="435">
               <caret line="68" column="0" lean-forward="true" selection-start-line="68" selection-start-column="0" selection-end-line="68" selection-end-column="0" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
@@ -138,6 +128,7 @@
       <find>cbge</find>
       <find>batch_size</find>
       <find>X</find>
+      <find>init_sigma</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -158,8 +149,8 @@
         <option value="$PROJECT_DIR$/MyCapsNetwork/Margin_loss.py" />
         <option value="$PROJECT_DIR$/Other/Softmax.py" />
         <option value="$PROJECT_DIR$/Other/Margin_loss.py" />
-        <option value="$PROJECT_DIR$/MyCapsNetwork/CapsNetwork.py" />
         <option value="$PROJECT_DIR$/Main.py" />
+        <option value="$PROJECT_DIR$/MyCapsNetwork/CapsNetwork.py" />
       </list>
     </option>
   </component>
@@ -373,7 +364,14 @@
       <option name="project" value="LOCAL" />
       <updated>1520811039967</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Fixed the accuracy calculation">
+      <created>1520867706040</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1520867706040</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -382,7 +380,7 @@
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.319337" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.319337" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -391,7 +389,8 @@
       <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="R Graphics" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="SciView" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.396875" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="SciView" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.396875" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -400,7 +399,6 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -412,7 +410,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="WIP" />
-    <option name="LAST_COMMIT_MESSAGE" value="WIP" />
+    <MESSAGE value="Fixed the accuracy calculation" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed the accuracy calculation" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -450,9 +449,9 @@
           <caret line="55" column="44" lean-forward="false" selection-start-line="55" selection-start-column="44" selection-end-line="55" selection-end-column="44" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
-            <marker date="1520860821417" expanded="true" signature="6770:7012" ph="..." />
-            <marker date="1520860821417" expanded="true" signature="7689:7894" ph="..." />
-            <marker date="1520860821417" expanded="true" signature="9152:9333" ph="..." />
+            <marker date="1520879270630" expanded="true" signature="8051:8293" ph="..." />
+            <marker date="1520879270630" expanded="true" signature="8970:9175" ph="..." />
+            <marker date="1520879270630" expanded="true" signature="10431:10612" ph="..." />
           </folding>
         </state>
       </provider>
@@ -524,9 +523,9 @@
           <caret line="55" column="44" lean-forward="false" selection-start-line="55" selection-start-column="44" selection-end-line="55" selection-end-column="44" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
-            <marker date="1520860821417" expanded="true" signature="6770:7012" ph="..." />
-            <marker date="1520860821417" expanded="true" signature="7689:7894" ph="..." />
-            <marker date="1520860821417" expanded="true" signature="9152:9333" ph="..." />
+            <marker date="1520879270630" expanded="true" signature="8051:8293" ph="..." />
+            <marker date="1520879270630" expanded="true" signature="8970:9175" ph="..." />
+            <marker date="1520879270630" expanded="true" signature="10431:10612" ph="..." />
           </folding>
         </state>
       </provider>
@@ -578,9 +577,9 @@
           <caret line="0" column="18" lean-forward="true" selection-start-line="0" selection-start-column="18" selection-end-line="0" selection-end-column="18" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
-            <marker date="1520860821417" expanded="true" signature="6770:7012" ph="..." />
-            <marker date="1520860821417" expanded="true" signature="7689:7894" ph="..." />
-            <marker date="1520860821417" expanded="true" signature="9152:9333" ph="..." />
+            <marker date="1520879270630" expanded="true" signature="8051:8293" ph="..." />
+            <marker date="1520879270630" expanded="true" signature="8970:9175" ph="..." />
+            <marker date="1520879270630" expanded="true" signature="10431:10612" ph="..." />
           </folding>
         </state>
       </provider>
@@ -631,16 +630,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Other/SquashVsSigmoid.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="469">
-          <caret line="26" column="42" lean-forward="false" selection-start-line="26" selection-start-column="27" selection-end-line="26" selection-end-column="42" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Other/SimpleCapsuleNetwork.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="315">
@@ -664,14 +653,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Other/Softmax.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="504">
-          <caret line="24" column="17" lean-forward="false" selection-start-line="24" selection-start-column="17" selection-end-line="24" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Other/Margin_loss.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="433">
@@ -682,9 +663,27 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Other/Softmax.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="504">
+          <caret line="24" column="17" lean-forward="false" selection-start-line="24" selection-start-column="17" selection-end-line="24" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Other/SquashVsSigmoid.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="469">
+          <caret line="26" column="42" lean-forward="false" selection-start-line="26" selection-start-column="27" selection-end-line="26" selection-end-column="42" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="432">
+        <state relative-caret-position="435">
           <caret line="68" column="0" lean-forward="true" selection-start-line="68" selection-start-column="0" selection-end-line="68" selection-end-column="0" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
@@ -694,13 +693,13 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/MyCapsNetwork/CapsNetwork.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="474">
-          <caret line="156" column="52" lean-forward="true" selection-start-line="156" selection-start-column="52" selection-end-line="156" selection-end-column="52" />
+        <state relative-caret-position="483">
+          <caret line="183" column="43" lean-forward="true" selection-start-line="183" selection-start-column="43" selection-end-line="183" selection-end-column="43" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
-            <marker date="1520860821417" expanded="true" signature="6770:7012" ph="..." />
-            <marker date="1520860821417" expanded="true" signature="7689:7894" ph="..." />
-            <marker date="1520860821417" expanded="true" signature="9152:9333" ph="..." />
+            <marker date="1520879270630" expanded="true" signature="8051:8293" ph="..." />
+            <marker date="1520879270630" expanded="true" signature="8970:9175" ph="..." />
+            <marker date="1520879270630" expanded="true" signature="10431:10612" ph="..." />
           </folding>
         </state>
       </provider>

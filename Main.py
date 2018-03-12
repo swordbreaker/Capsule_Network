@@ -37,8 +37,8 @@ conv2 = tf.layers.conv2d(conv1, name="conv2", **conv2_params)
 caps1_raw = tf.reshape(conv2, [-1, caps1_n_caps, caps1_n_dims], name="caps1_raw")
 
 caps_network = CapsNetwork(caps1_raw, X, "./my_capsule_network")
-caps_network.train(mnist, epochs=10)
-caps_network.eval(mnist)
+# caps_network.train(mnist, epochs=10)
+# caps_network.eval(mnist)
 
 n_samples = 5
 sample_images = mnist.test.images[:n_samples].reshape([-1, 28, 28, 1])
