@@ -32,8 +32,7 @@ class CapsNetwork(object):
         self.caps_outputs = []
 
         caps1_output = self.squash(X, name="caps1_output")
-        W_init = tf.random_normal(
-            shape=(1, self.caps1_caps, self.caps2_caps, self.caps2_vec_length, self.caps1_vec_length),
+        W_init = tf.random_normal(shape=(1, self.caps1_caps, self.caps2_caps, self.caps2_vec_length, self.caps1_vec_length),
             stddev=self.init_sigma, dtype=tf.float32, name="W_init")
         W = tf.Variable(W_init, name="W")
         self.batch_size = tf.shape(caps1_output)[0]
@@ -124,66 +123,91 @@ class CapsNetwork(object):
 
             return caps2_output_round_2
 
-    def __routing_by_agreement2(self, prev_caps, current_caps):
-        # def condition(input, counter):
-        #     return tf.less(counter, self.routing_by_agreement_iterations)
-        #
-        # def loop_body(input, counter):
-        #     # 2: b_ij
-        #     raw_weigts = tf.zeros([self.batch_size, prev_caps, current_caps, 1, 1], dtype=np.float32,
-        #                           name="raw_weights")
-        #     # 4: c_i = softmax(b_i)
-        #     routing_weights = tf.nn.softmax(raw_weigts, dim=2, name="routing_weights")
-        #     # 5: sum c_ij * û_j|i
-        #     weighted_predictions = tf.multiply(routing_weights, self.caps2_predicted, name="weighted_predictions")
-        #     weighted_sum = tf.reduce_sum(weighted_predictions, axis=1, keep_dims=True, name="weigthed_sum")
-        #     # 6: squash(sj)
-        #     caps_output = self.squash(weighted_sum, axis=2, name="caps2_output_round_1")
-        #
-        #     # 7: agreement = û_j|i dot v_j
-        #     caps_output_tiled = tf.tile(caps_output, [1, self.caps1_caps, 1, 1, 1],
-        #                                          name="caps2_output_round_1_tiled")
-        #     agreement = tf.matmul(self.caps2_predicted, caps_output_tiled, transpose_a=True, name="agreement")
-        #     # 7: b_j|i = b_ij + agreement
-        #     raw_weights_round_2 = tf.add(raw_weigts, agreement, name="raw_weights_round_2")
-        #
-        #     return caps_output, tf.add(counter, 1)
-        #
-        # with tf.name_scope("compute_sum_of_squares"):
-        #     counter = tf.constant(1)
-        #     sum_of_squares = tf.constant(0)
-        #
-        #     result = tf.while_loop(condition, loop_body, [sum_of_squares, counter])
+    def __routing_by_agreement2(self):
+            #def condition(input, counter):
+            #    return tf.less(counter, self.routing_by_agreement_iterations)
+        
+            #def loop_body(input, counter):
+            #    # 2: b_ij
+            #    raw_weigts = tf.zeros([self.batch_size, prev_caps, current_caps, 1, 1], dtype=np.float32,
+            #                        name="raw_weights")
+            #    # 4: c_i = softmax(b_i)
+            #    routing_weights = tf.nn.softmax(raw_weigts, dim=2, name="routing_weights")
+            #    # 5: sum c_ij * û_j|i
+            #    weighted_predictions = tf.multiply(routing_weights, self.caps2_predicted, name="weighted_predictions")
+            #    weighted_sum = tf.reduce_sum(weighted_predictions, axis=1, keep_dims=True, name="weigthed_sum")
+            #    # 6: squash(sj)
+            #    caps_output = self.squash(weighted_sum, axis=2, name="caps2_output_round_1")
+        
+            #    # 7: agreement = û_j|i dot v_j
+            #    caps_output_tiled = tf.tile(caps_output, [1, self.caps1_caps, 1, 1, 1],
+            #                                        name="caps2_output_round_1_tiled")
+            #    agreement = tf.matmul(self.caps2_predicted, caps_output_tiled, transpose_a=True, name="agreement")
+            #    # 7: b_j|i = b_ij + agreement
+            #    raw_weights_round_2 = tf.add(raw_weigts, agreement, name="raw_weights_round_2")
+        
+            #    return caps_output, tf.add(counter, 1)
 
+        prev_caps = self.caps1_caps
+        current_caps = self.caps2_caps
 
         # 2: b_ij
-        raw_weigts = tf.zeros([self.batch_size, self.caps1_caps, self.caps2_caps, 1, 1], dtype=np.float32,
-                              name="raw_weights")
+        raw_weigts = tf.zeros([self.batch_size, prev_caps, current_caps, 1, 1], dtype=np.float32,
+                            name="raw_weights")
+        
+        caps_output = tf.zeros([self.batch_size, prev_caps, current_caps, 1, 1], dtype=np.float32, name="caps2_output")
+
+        for i in range(0, 4):
+            # 4: c_i = softmax(b_i)
+            routing_weights = tf.nn.softmax(raw_weigts, dim=2, name="routing_weights")
+            # 5: sum c_ij * û_j|i
+            weighted_predictions = tf.multiply(routing_weights, self.caps2_predicted, name="weighted_predictions")
+            weighted_sum = tf.reduce_sum(weighted_predictions, axis=1, keep_dims=True, name="weigthed_sum")
+            # 6: squash(sj)
+            caps_output = self.squash(weighted_sum, axis=2, name="caps2_output")
+        
+            # 7: agreement = û_j|i dot v_j
+            caps_output_tiled = tf.tile(caps_output, [1, self.caps1_caps, 1, 1, 1],
+                                                name="caps2_output_round_1_tiled")
+            agreement = tf.matmul(self.caps2_predicted, caps_output_tiled, transpose_a=True, name="agreement")
+            # 7: b_j|i = b_ij + agreement
+            raw_weights_round = tf.add(raw_weigts, agreement, name="raw_weights_round_2")
+
+        return caps_output
+   
+       
+
+    #i = tf.constant(0)
+    #c = lambda i: tf.less(i, 10)
+    #r = tf.while_loop(c, cond, [i])
+
+    #    with tf.name_scope("compute_sum_of_squares"):
+    #        counter = tf.constant(1)
+    #        sum_of_squares = tf.constant(0)
+        
+    #        result = tf.while_loop(condition, loop_body, [sum_of_squares, counter])
+
+    def loop_body(i):
+        # 2: b_ij
+        raw_weigts = tf.zeros([self.batch_size, prev_caps, current_caps, 1, 1], dtype=np.float32,
+                            name="raw_weights")
         # 4: c_i = softmax(b_i)
         routing_weights = tf.nn.softmax(raw_weigts, dim=2, name="routing_weights")
         # 5: sum c_ij * û_j|i
         weighted_predictions = tf.multiply(routing_weights, self.caps2_predicted, name="weighted_predictions")
         weighted_sum = tf.reduce_sum(weighted_predictions, axis=1, keep_dims=True, name="weigthed_sum")
         # 6: squash(sj)
-        caps2_output_round_1 = self.squash(weighted_sum, axis=2, name="caps2_output_round_1")
-
+        caps_output = self.squash(weighted_sum, axis=2, name="caps2_output_round_1")
+        
         # 7: agreement = û_j|i dot v_j
-        caps2_output_round_1_tiled = tf.tile(caps2_output_round_1, [1, self.caps1_caps, 1, 1, 1],
-                                             name="caps2_output_round_1_tiled")
-        agreement = tf.matmul(self.caps2_predicted, caps2_output_round_1_tiled, transpose_a=True, name="agreement")
+        caps_output_tiled = tf.tile(caps_output, [1, self.caps1_caps, 1, 1, 1],
+                                            name="caps2_output_round_1_tiled")
+        agreement = tf.matmul(self.caps2_predicted, caps_output_tiled, transpose_a=True, name="agreement")
         # 7: b_j|i = b_ij + agreement
-        raw_weights_round_2 = tf.add(raw_weigts, agreement, name="raw_weights_round_2")
-
-        routing_weights_round_2 = tf.nn.softmax(raw_weights_round_2, dim=2, name="routing_weights_round_2")
-        weighted_predictions_round_2 = tf.multiply(routing_weights_round_2, self.caps2_predicted,
-                                                   name="weighted_predictions_round_2")
-        weighted_sum_round_2 = tf.reduce_sum(weighted_predictions_round_2, axis=1, keep_dims=True,
-                                             name="weighted_sum_round_2")
-        caps2_output_round_2 = self.squash(weighted_sum_round_2, axis=-2, name="caps2_output_round_2")
-
-        return caps2_output_round_2
-
-
+        raw_weights_round = tf.add(raw_weigts, agreement, name="raw_weights_round_2")
+        
+        return tf.add(i, 1)
+    
     def __predict(self):
         with tf.name_scope('predict'):
             y_proba = self.safe_norm(self.caps2_output, axis=-2, name="y_proba")
@@ -235,7 +259,7 @@ class CapsNetwork(object):
         with tf.Session() as sess:
             print(sess.run(result))
 
-    def train(self, mnist, epochs: int, batch_size: int = 50, restore_checkpoint=True):
+    def train(self, mnist, epochs: int, batch_size: int=50, restore_checkpoint=True):
         n_iterations_per_epoch = mnist.train.num_examples // batch_size
         n_iterations_validation = mnist.validation.num_examples // batch_size
         best_loss_val = np.infty
@@ -252,16 +276,14 @@ class CapsNetwork(object):
                 for iteration in range(1, n_iterations_per_epoch + 1):
                     X_batch, y_batch = mnist.train.next_batch(batch_size)
                     # Run the training operation and measure the loss:
-                    _, loss_train = sess.run(
-                        [self.training_optimizer, self.loss],
+                    _, loss_train = sess.run([self.training_optimizer, self.loss],
                         feed_dict={self._X_raw: X_batch.reshape([-1, 28, 28, 1]),
                                    self.y: y_batch,
                                    self.decoder.mask_with_labels: True})
 
                     tf.summary.scalar('loss', self.loss)
 
-                    print("\rIteration: {}/{} ({:.1f}%)  Loss: {:.5f}".format(
-                        iteration, n_iterations_per_epoch,
+                    print("\rIteration: {}/{} ({:.1f}%)  Loss: {:.5f}".format(iteration, n_iterations_per_epoch,
                         iteration * 100 / n_iterations_per_epoch,
                         loss_train),
                         end="")
@@ -272,20 +294,17 @@ class CapsNetwork(object):
                 acc_vals = []
                 for iteration in range(1, n_iterations_validation + 1):
                     X_batch, y_batch = mnist.validation.next_batch(batch_size)
-                    loss_val, acc_val = sess.run(
-                        [self.loss, self.accuracy],
+                    loss_val, acc_val = sess.run([self.loss, self.accuracy],
                         feed_dict={self._X_raw: X_batch.reshape([-1, 28, 28, 1]),
                                    self.y: y_batch})
                     loss_vals.append(loss_val)
                     acc_vals.append(acc_val)
-                    print("\rEvaluating the model: {}/{} ({:.1f}%)".format(
-                        iteration, n_iterations_validation,
+                    print("\rEvaluating the model: {}/{} ({:.1f}%)".format(iteration, n_iterations_validation,
                         iteration * 100 / n_iterations_validation),
                         end=" " * 10)
                 loss_val = np.mean(loss_vals)
                 acc_val = np.mean(acc_vals)
-                print("\rEpoch: {}  Val accuracy: {:.4f}%  Loss: {:.6f}{}".format(
-                    epoch + 1, acc_val * 100, loss_val,
+                print("\rEpoch: {}  Val accuracy: {:.4f}%  Loss: {:.6f}{}".format(epoch + 1, acc_val * 100, loss_val,
                     " (improved)" if loss_val < best_loss_val else ""))
 
                 # And save the model if it improved:
@@ -305,26 +324,22 @@ class CapsNetwork(object):
             acc_tests = []
             for iteration in range(1, n_iterations_test + 1):
                 X_batch, y_batch = mnist.test.next_batch(batch_size)
-                loss_test, acc_test = sess.run(
-                    [self.loss, self.accuracy],
+                loss_test, acc_test = sess.run([self.loss, self.accuracy],
                     feed_dict={self._X_raw: X_batch.reshape([-1, 28, 28, 1]),
                                self.y: y_batch})
                 loss_tests.append(loss_test)
                 acc_tests.append(acc_test)
-                print("\rEvaluating the model: {}/{} ({:.1f}%)".format(
-                    iteration, n_iterations_test,
+                print("\rEvaluating the model: {}/{} ({:.1f}%)".format(iteration, n_iterations_test,
                     iteration * 100 / n_iterations_test),
                     end=" " * 10)
             loss_test = np.mean(loss_tests)
             acc_test = np.mean(acc_tests)
-            print("\rFinal test accuracy: {:.4f}%  Loss: {:.6f}".format(
-                acc_test * 100, loss_test))
+            print("\rFinal test accuracy: {:.4f}%  Loss: {:.6f}".format(acc_test * 100, loss_test))
 
     def predict_and_reconstruct(self, x):
         with tf.Session() as sess:
             self.saver.restore(sess, self.checkpoint_path)
-            caps2_output_value, decoder_output_value, y_pred_value = sess.run(
-                [self.caps2_output, self.decoder.decoder_output, self.y_pred],
+            caps2_output_value, decoder_output_value, y_pred_value = sess.run([self.caps2_output, self.decoder.decoder_output, self.y_pred],
                 feed_dict={self._X_raw: x,
                            self.y: np.array([], dtype=np.int64)})
 
