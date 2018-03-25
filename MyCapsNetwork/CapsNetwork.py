@@ -28,15 +28,11 @@ class CapsNetwork(object):
     def __init__(self, X: tf.Tensor, X_raw: tf.Tensor, checkpoint_path: str):
         self._X_raw = X_raw
         self.checkpoint_path = checkpoint_path
-
         self.caps_outputs = []
 
         caps1_output = self.squash(X, name="caps1_output")
-        W_init = tf.random_normal(shape=(1, self.caps1_caps, self.caps2_caps, self.caps2_vec_length, self.caps1_vec_length),
-            stddev=self.init_sigma, dtype=tf.float32, name="W_init")
-        W = tf.Variable(W_init, name="W")
         self.batch_size = tf.shape(caps1_output)[0]
-        self.W_tiled = tf.tile(W, [self.batch_size, 1, 1, 1, 1], name="W_tiled")
+        self.W_tiled = self.__init_W()
 
         caps1_output_expanded = tf.expand_dims(caps1_output, -1, name="caps1_output_expanded")
         caps1_output_tile = tf.expand_dims(caps1_output_expanded, 2, name="caps1_output_tile")
@@ -56,6 +52,13 @@ class CapsNetwork(object):
         self.init = tf.global_variables_initializer()
         self.saver = tf.train.Saver()
 
+    def __init_W(self):
+        with tf.name_scope('init_W'):
+            W_init = tf.random_normal(shape=(1, self.caps1_caps, self.caps2_caps, self.caps2_vec_length, self.caps1_vec_length),
+                stddev=self.init_sigma, dtype=tf.float32, name="W_init")
+            W = tf.Variable(W_init, name="W")
+            return tf.tile(W, [self.batch_size, 1, 1, 1, 1], name="W_tiled")
+
     def caps_layer(self):
         caps_output_tield = self.__tile_output(self.caps_outputs[-1])
         caps_predicted = tf.matmul(self.W_tiled, caps_output_tield)
@@ -65,32 +68,6 @@ class CapsNetwork(object):
         caps_output_tile = tf.expand_dims(caps_output_expanded, 2, name="caps1_output_tile")
         return tf.tile(caps_output_tile, [1, 1, self.caps2_caps, 1, 1], name="caps1_output_tiled")
 
-    def apply_options(self, options: {float}):
-        # primary capsules
-        self.caps1_maps = self.get_or_default(options, 'caps1_maps', 32)
-        self.caps1_caps = self.get_or_default(options, 'caps1_caps', self.caps1_maps * 6 * 6)
-        self.caps1_vec_length = self.get_or_default(options, 'caps1_vec_length', 8)
-
-        # digit capsules
-        self.caps2_caps = self.get_or_default(options, 'caps2_caps', 10)
-        self.caps2_vec_length = self.get_or_default(options, 'caps2_vec_length', 16)
-
-        self.init_sigma = self.get_or_default(options, 'init_sigma', 0.1)
-
-        # margin loss
-        self.m_plus = self.get_or_default(options, 'm_plus', 0.9)
-        self.m_minus = self.get_or_default(options, 'm_minus', 0.1)
-        self.lambda_ = self.get_or_default(options, 'lambda_', 0.5)
-
-        # final loss
-        self.alpha = self.get_or_default(options, 'alpha', 0.005)
-
-    @staticmethod
-    def get_or_default(options: {float}, key: str, default):
-        if key in options:
-            return options[key]
-        else:
-            return default
 
     def __routing_by_agreement(self):
         # TODO make a loop
@@ -157,7 +134,7 @@ class CapsNetwork(object):
         
         caps_output = tf.zeros([self.batch_size, prev_caps, current_caps, 1, 1], dtype=np.float32, name="caps2_output")
 
-        for i in range(0, 4):
+        for i in range(0, routing_by_agreement_iterations):
             # 4: c_i = softmax(b_i)
             routing_weights = tf.nn.softmax(raw_weigts, dim=2, name="routing_weights")
             # 5: sum c_ij * û_j|i
@@ -259,9 +236,9 @@ class CapsNetwork(object):
         with tf.Session() as sess:
             print(sess.run(result))
 
-    def train(self, mnist, epochs: int, batch_size: int=50, restore_checkpoint=True):
-        n_iterations_per_epoch = mnist.train.num_examples // batch_size
-        n_iterations_validation = mnist.validation.num_examples // batch_size
+    def train(self, x_train: np.ndarray, y_train : np.ndarray, x_val : np.ndarray, y_val : np.ndarray, epochs: int, batch_size: int=50, restore_checkpoint=True):
+        n_iterations_per_epoch = x_train.shape[0] // batch_size
+        n_iterations_validation = x_val.shape[0] // batch_size
         best_loss_val = np.infty
 
         with tf.Session() as sess:
@@ -272,9 +249,13 @@ class CapsNetwork(object):
 
             writer = tf.summary.FileWriter("./logs", sess.graph)
 
+            
             for epoch in range(epochs):
+                batch_index = 0
                 for iteration in range(1, n_iterations_per_epoch + 1):
-                    X_batch, y_batch = mnist.train.next_batch(batch_size)
+                    X_batch = x_train[batch_index:batch_index+batch_size-1]
+                    y_batch = y_train[batch_index:batch_index+batch_size-1]
+
                     # Run the training operation and measure the loss:
                     _, loss_train = sess.run([self.training_optimizer, self.loss],
                         feed_dict={self._X_raw: X_batch.reshape([-1, 28, 28, 1]),
@@ -287,13 +268,16 @@ class CapsNetwork(object):
                         iteration * 100 / n_iterations_per_epoch,
                         loss_train),
                         end="")
+                    batch_index += batch_size
 
                 # At the end of each epoch,
                 # measure the validation loss and accuracy:
+                batch_index = 0
                 loss_vals = []
                 acc_vals = []
                 for iteration in range(1, n_iterations_validation + 1):
-                    X_batch, y_batch = mnist.validation.next_batch(batch_size)
+                    X_batch = x_val[batch_index:batch_index+batch_size-1]
+                    y_batch = y_val[batch_index:batch_index+batch_size-1]
                     loss_val, acc_val = sess.run([self.loss, self.accuracy],
                         feed_dict={self._X_raw: X_batch.reshape([-1, 28, 28, 1]),
                                    self.y: y_batch})
@@ -302,6 +286,7 @@ class CapsNetwork(object):
                     print("\rEvaluating the model: {}/{} ({:.1f}%)".format(iteration, n_iterations_validation,
                         iteration * 100 / n_iterations_validation),
                         end=" " * 10)
+                    batch_index += batch_size
                 loss_val = np.mean(loss_vals)
                 acc_val = np.mean(acc_vals)
                 print("\rEpoch: {}  Val accuracy: {:.4f}%  Loss: {:.6f}{}".format(epoch + 1, acc_val * 100, loss_val,
@@ -314,16 +299,18 @@ class CapsNetwork(object):
 
             writer.close()
 
-    def eval(self, mnist, batch_size=50):
-        n_iterations_test = mnist.test.num_examples // batch_size
+    def eval(self, x_test, y_test, batch_size=50):
+        n_iterations_test = x_test.shape[0] // batch_size
 
         with tf.Session() as sess:
             self.saver.restore(sess, self.checkpoint_path)
 
             loss_tests = []
             acc_tests = []
+            batch_index = 0
             for iteration in range(1, n_iterations_test + 1):
-                X_batch, y_batch = mnist.test.next_batch(batch_size)
+                X_batch =  x_test[batch_index:batch_index+batch_size-1]
+                y_batch = y_test[batch_index:batch_index+batch_size-1]
                 loss_test, acc_test = sess.run([self.loss, self.accuracy],
                     feed_dict={self._X_raw: X_batch.reshape([-1, 28, 28, 1]),
                                self.y: y_batch})
@@ -332,6 +319,7 @@ class CapsNetwork(object):
                 print("\rEvaluating the model: {}/{} ({:.1f}%)".format(iteration, n_iterations_test,
                     iteration * 100 / n_iterations_test),
                     end=" " * 10)
+                batch_index += batch_size
             loss_test = np.mean(loss_tests)
             acc_test = np.mean(acc_tests)
             print("\rFinal test accuracy: {:.4f}%  Loss: {:.6f}".format(acc_test * 100, loss_test))

@@ -14,14 +14,15 @@ class CapsDecoder(object):
         self.decoder_output = self.build_decoder_output()
 
     def build_decoder_input(self):
-        reconstruction_targets = tf.cond(self.mask_with_labels,  # condition
-                                         lambda: self.caps_network.y,  # if True
-                                         lambda: self.caps_network.y_pred,  # if False
-                                         name="reconstruction_targets")
-        reconstruction_mask = tf.one_hot(reconstruction_targets, depth=self.caps_network.caps2_caps, name="reconstruction_mask")
-        reconstruction_mask_reshaped = tf.reshape(reconstruction_mask, [-1, 1, self.caps_network.caps2_caps, 1, 1], name="reconstruction_mask_reshaped")
-        caps2_output_masked = tf.multiply(self.caps_network.caps2_output, reconstruction_mask_reshaped, name="caps2_output_masked")
-        return tf.reshape(caps2_output_masked, [-1, self.caps_network.caps2_caps * self.caps_network.caps2_vec_length], name="decoder_input")
+        with tf.name_scope("build_decoder_input"):
+            reconstruction_targets = tf.cond(self.mask_with_labels,  # condition
+                                             lambda: self.caps_network.y,  # if True
+                                             lambda: self.caps_network.y_pred,  # if False
+                                             name="reconstruction_targets")
+            reconstruction_mask = tf.one_hot(reconstruction_targets, depth=self.caps_network.caps2_caps, name="reconstruction_mask")
+            reconstruction_mask_reshaped = tf.reshape(reconstruction_mask, [-1, 1, self.caps_network.caps2_caps, 1, 1], name="reconstruction_mask_reshaped")
+            caps2_output_masked = tf.multiply(self.caps_network.caps2_output, reconstruction_mask_reshaped, name="caps2_output_masked")
+            return tf.reshape(caps2_output_masked, [-1, self.caps_network.caps2_caps * self.caps_network.caps2_vec_length], name="decoder_input")
 
     def build_decoder_output(self):
         with tf.name_scope("decoder"):
@@ -30,6 +31,7 @@ class CapsDecoder(object):
             return tf.layers.dense(hidden2, self.n_output, activation=tf.nn.sigmoid, name="decoder_output")
 
     def calc_reconstruction_loss(self, x):
-        X_flat = tf.reshape(x, [-1, self.n_output], name="X_flat")
-        squared_difference = tf.square(X_flat - self.decoder_output, name="squared_difference")
-        return tf.reduce_mean(squared_difference, name="reconstruction_loss")
+        with tf.name_scope("calc_reconstruction"):
+            X_flat = tf.reshape(x, [-1, self.n_output], name="X_flat")
+            squared_difference = tf.square(X_flat - self.decoder_output, name="squared_difference")
+            return tf.reduce_mean(squared_difference, name="reconstruction_loss")
