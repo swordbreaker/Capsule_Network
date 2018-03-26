@@ -258,7 +258,7 @@ class CapsNetwork(object):
 
                     # Run the training operation and measure the loss:
                     _, loss_train = sess.run([self.training_optimizer, self.loss],
-                        feed_dict={self._X_raw: X_batch.reshape([-1, 28, 28, 1]),
+                        feed_dict={self._X_raw: X_batch.reshape([-1, 28, 28, 1]), #Todo make the reshape in the ImageCapsnetwork
                                    self.y: y_batch,
                                    self.decoder.mask_with_labels: True})
 

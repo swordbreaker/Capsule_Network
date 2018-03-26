@@ -56,6 +56,8 @@ class ImageCapsNetwork(object):
         sample_images = sample_images.reshape(-1, 28, 28)
         reconstructions = decoder_output_value.reshape([-1, 28, 28])
 
+        plt.ion()
+
         plt.figure(figsize=(n_samples * 2, 3))
         for index in range(n_samples):
             plt.subplot(1, n_samples, index + 1)

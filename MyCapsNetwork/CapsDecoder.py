@@ -16,8 +16,8 @@ class CapsDecoder(object):
     def build_decoder_input(self):
         with tf.name_scope("build_decoder_input"):
             reconstruction_targets = tf.cond(self.mask_with_labels,  # condition
-                                             lambda: self.caps_network.y,  # if True
-                                             lambda: self.caps_network.y_pred,  # if False
+                                             lambda: self.caps_network.y,  # if True use y
+                                             lambda: self.caps_network.y_pred,  # if False use y_pred
                                              name="reconstruction_targets")
             reconstruction_mask = tf.one_hot(reconstruction_targets, depth=self.caps_network.caps2_caps, name="reconstruction_mask")
             reconstruction_mask_reshaped = tf.reshape(reconstruction_mask, [-1, 1, self.caps_network.caps2_caps, 1, 1], name="reconstruction_mask_reshaped")
