@@ -19,6 +19,7 @@ def mnist(train=True, eval=True, restore_checkpoint=True):
     if eval:
         img_caps_net.eval()
     img_caps_net.plot_solution(labels, n_samples=10)
+    plt.show()
 
 
 def mnist_fashion(train=True, eval=True, restore_checkpoint=True, epochs=2):
@@ -36,8 +37,6 @@ def mnist_fashion(train=True, eval=True, restore_checkpoint=True, epochs=2):
         "Bag",
         "Ankle boot"]
 
-    labels = [str(i) for i in range(10)]
-    data = input_data.read_data_sets("/tmp/data/")
     data_set = DataSet.fromtf(data)
     img_caps_net = ImageCapsNetwork(data_set, "./mnist_fashion")
     if train:
@@ -45,3 +44,5 @@ def mnist_fashion(train=True, eval=True, restore_checkpoint=True, epochs=2):
     if eval:
         img_caps_net.eval()
     img_caps_net.plot_solution(labels, n_samples=10)
+    for i in range(10):
+        img_caps_net.plot_from_category(labels, i, n_samples=10)
