@@ -248,7 +248,6 @@ class CapsNetwork(object):
                 self.init.run()
 
             writer = tf.summary.FileWriter("./logs", sess.graph)
-
             
             for epoch in range(epochs):
                 batch_index = 0
@@ -297,6 +296,7 @@ class CapsNetwork(object):
                     save_path = self.saver.save(sess, self.checkpoint_path)
                     best_loss_val = loss_val
 
+            merge = tf.summary.merge_all()
             writer.close()
 
     def eval(self, x_test, y_test, batch_size=50):

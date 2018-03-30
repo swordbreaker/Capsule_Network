@@ -33,6 +33,9 @@
     <Compile Include="MyCapsNetwork\ImageCapsNetwork.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Other\image_processing_test.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Other\Margin_loss.py" />
     <Compile Include="Other\SimpleCapsuleNetwork.py" />
     <Compile Include="Other\Softmax.py" />
