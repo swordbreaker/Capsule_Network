@@ -7,11 +7,11 @@ class CapsNetwork(object):
     # primary capsules
     caps1_maps = 32
     caps1_caps = caps1_maps * 6 * 6  # 1152 primary capsules
-    caps1_vec_length = 8
+    caps1_vec_norm = 8
 
     # digit capsules
     caps2_caps = 10
-    caps2_vec_length = 16
+    caps2_vec_norm = 16
     init_sigma = 0.1
 
     # margin loss
@@ -54,7 +54,7 @@ class CapsNetwork(object):
 
     def __init_W(self):
         with tf.name_scope('init_W'):
-            W_init = tf.random_normal(shape=(1, self.caps1_caps, self.caps2_caps, self.caps2_vec_length, self.caps1_vec_length),
+            W_init = tf.random_normal(shape=(1, self.caps1_caps, self.caps2_caps, self.caps2_vec_norm, self.caps1_vec_norm),
                 stddev=self.init_sigma, dtype=tf.float32, name="W_init")
             W = tf.Variable(W_init, name="W")
             return tf.tile(W, [self.batch_size, 1, 1, 1, 1], name="W_tiled")
@@ -257,7 +257,8 @@ class CapsNetwork(object):
 
                     # Run the training operation and measure the loss:
                     _, loss_train = sess.run([self.training_optimizer, self.loss],
-                        feed_dict={self._X_raw: X_batch.reshape([-1, 28, 28, 1]), #Todo make the reshape in the ImageCapsnetwork
+                        #feed_dict={self._X_raw: X_batch.reshape([-1, 28, 28, 1]), #Todo make the reshape in the ImageCapsnetwork
+                        feed_dict={self._X_raw: X_batch,
                                    self.y: y_batch,
                                    self.decoder.mask_with_labels: True})
 
@@ -278,7 +279,8 @@ class CapsNetwork(object):
                     X_batch = x_val[batch_index:batch_index+batch_size-1]
                     y_batch = y_val[batch_index:batch_index+batch_size-1]
                     loss_val, acc_val = sess.run([self.loss, self.accuracy],
-                        feed_dict={self._X_raw: X_batch.reshape([-1, 28, 28, 1]),
+                        #feed_dict={self._X_raw: X_batch.reshape([-1, 28, 28, 1]),
+                        feed_dict={self._X_raw: X_batch,
                                    self.y: y_batch})
                     loss_vals.append(loss_val)
                     acc_vals.append(acc_val)

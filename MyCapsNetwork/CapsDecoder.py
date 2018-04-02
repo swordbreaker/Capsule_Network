@@ -22,7 +22,7 @@ class CapsDecoder(object):
             reconstruction_mask = tf.one_hot(reconstruction_targets, depth=self.caps_network.caps2_caps, name="reconstruction_mask")
             reconstruction_mask_reshaped = tf.reshape(reconstruction_mask, [-1, 1, self.caps_network.caps2_caps, 1, 1], name="reconstruction_mask_reshaped")
             caps2_output_masked = tf.multiply(self.caps_network.caps2_output, reconstruction_mask_reshaped, name="caps2_output_masked")
-            return tf.reshape(caps2_output_masked, [-1, self.caps_network.caps2_caps * self.caps_network.caps2_vec_length], name="decoder_input")
+            return tf.reshape(caps2_output_masked, [-1, self.caps_network.caps2_caps * self.caps_network.caps2_vec_norm], name="decoder_input")
 
     def build_decoder_output(self):
         with tf.name_scope("decoder"):

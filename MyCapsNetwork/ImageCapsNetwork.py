@@ -4,6 +4,7 @@ from MyCapsNetwork.DataSet import *
 import tensorflow as tf
 import matplotlib
 import matplotlib.pyplot as plt
+import cv2
 
 class ImageCapsNetwork(object):
     """description of class"""
@@ -43,10 +44,12 @@ class ImageCapsNetwork(object):
         return CapsNetwork(caps1_raw, X, checkpoint_path)
 
     def train(self, epochs = 10, batch_size = 100, restore_checkpoint = True):
-        self.caps_network.train(self.ds.x_train, self.ds.y_train, self.ds.x_val, self.ds.y_val, epochs=epochs, batch_size=batch_size, restore_checkpoint=restore_checkpoint)
+        x_train = self.ds.x_train.reshape([-1, 28, 28, 1])
+        x_val = self.ds.x_val.reshape([-1, 28, 28, 1])
+        self.caps_network.train(x_train, self.ds.y_train, x_val, self.ds.y_val, epochs=epochs, batch_size=batch_size, restore_checkpoint=restore_checkpoint)
 
     def eval(self):
-        self.caps_network.eval(self.ds.x_test, self.ds.y_test)
+        self.caps_network.eval(self.ds.x_test.reshape([-1, 28, 28, 1]), self.ds.y_test)
 
     def plot_from_category(self, labels: [str], category, n_samples = 5):
         idx = self.ds.y_test == category
@@ -98,4 +101,46 @@ class ImageCapsNetwork(object):
             plt.axis("off")
 
         plt.show(block=False)
+        plt.show()
+
+    def transform_images_and_plot(self, labels: [str]):
+        img = self.ds.x_test[0]
+        img = img.reshape(28, 28)
+
+        n_samples = 6
+        sample_images = np.zeros(shape=(n_samples, 28, 28, 1))
+
+        angle = 90
+        for i in range(3):
+            M = cv2.getRotationMatrix2D((28/2,28/2),angle,1)
+            dst = cv2.warpAffine(img,M,(28,28))
+            dst = dst.reshape([28, 28, 1])
+            sample_images[i] = dst
+            angle += 90
+
+        for i in range(3):
+            M = cv2.getRotationMatrix2D((28/2,28/2),angle,0.5)
+            dst = cv2.warpAffine(img,M,(28,28))
+            dst = dst.reshape([28, 28, 1])
+            sample_images[i+3] = dst
+            angle += 90
+
+        caps2_output_value, decoder_output_value, y_pred_value = self.caps_network.predict_and_reconstruct(sample_images)
+
+        sample_images = sample_images.reshape(-1, 28, 28)
+        reconstructions = decoder_output_value.reshape([-1, 28, 28])
+
+        plt.figure(figsize=(n_samples * 2, 6))
+        for i in range(n_samples):
+            plt.subplot(2, n_samples, i + 1)
+            plt.imshow(sample_images[i], cmap="binary")
+            plt.title("Label:" + labels[self.ds.y_test[0]])
+            plt.axis("off")
+
+        for i in range(n_samples):
+            plt.subplot(2, n_samples, n_samples + i + 1)
+            plt.title(labels[y_pred_value[i]])
+            plt.imshow(reconstructions[i], cmap="binary")
+            plt.axis("off")
+
         plt.show()

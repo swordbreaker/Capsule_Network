@@ -25,3 +25,9 @@ dst = cv2.warpAffine(img,M,(28,28))
 
 plt.imshow(dst)
 plt.show()
+
+M = cv2.getRotationMatrix2D((28/2,28/2),25,0.5)
+dst2 = cv2.warpAffine(img,M,(28,28))
+
+plt.imshow(dst2)
+plt.show()
