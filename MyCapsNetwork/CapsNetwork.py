@@ -5,9 +5,9 @@ from MyCapsNetwork.CapsDecoder import *
 
 class CapsNetwork(object):
     # primary capsules
-    caps1_maps = 32
-    caps1_caps = caps1_maps * 6 * 6  # 1152 primary capsules
-    caps1_vec_norm = 8
+    #caps1_maps = 32
+    #caps1_caps = caps1_maps * 6 * 6  # 1152 primary capsules
+    #caps1_vec_norm = 8
 
     # digit capsules
     caps2_caps = 10
@@ -25,7 +25,12 @@ class CapsNetwork(object):
     # other
     routing_by_agreement_iterations = 2
 
-    def __init__(self, X: tf.Tensor, X_raw: tf.Tensor, checkpoint_path: str):
+    def __init__(self, X: tf.Tensor, X_raw: tf.Tensor, checkpoint_path: str, caps1_caps=1152, caps1_vec_norm = 8, caps2_caps = 10, caps2_vec_norm = 16, decoder_output=784):
+        self.caps1_caps = caps1_caps
+        self.caps1_vec_norm = caps1_vec_norm
+        self.caps2_caps = caps2_caps
+        self.caps2_vec_norm = caps2_vec_norm
+        
         self._X_raw = X_raw
         self.checkpoint_path = checkpoint_path
         self.caps_outputs = []
@@ -44,7 +49,7 @@ class CapsNetwork(object):
         self.caps2_output = self.__routing_by_agreement()
         self.y_pred = self.__predict()
         self.margin_loss = self.__calc_margin_loss()
-        self.decoder = CapsDecoder(self)
+        self.decoder = CapsDecoder(self, decoder_output)
         self.loss = self.__calc_loss()
         self.accuracy = self.__calc_accuracy()
         self.training_optimizer = self.__build_optimizer()
@@ -197,10 +202,10 @@ class CapsNetwork(object):
             caps2_output_norm = self.safe_norm(self.caps2_output, axis=-2, keep_dims=True, name="caps2_output_norm")
             # max(0, m_+ - ||v_k||) ** 2
             present_error_raw = tf.square(tf.maximum(0., self.m_plus - caps2_output_norm), name="present_error_raw")
-            present_error = tf.reshape(present_error_raw, shape=(-1, 10), name="present_error")
+            present_error = tf.reshape(present_error_raw, shape=(-1, self.caps2_caps), name="present_error")
             # max(0, ||v_k|| - m_-) ** 2
             absent_error_raw = tf.square(tf.maximum(0., caps2_output_norm - self.m_minus), name="absent_error_raw")
-            absent_error = tf.reshape(absent_error_raw, shape=(-1, 10), name="absent_error")
+            absent_error = tf.reshape(absent_error_raw, shape=(-1, self.caps2_caps), name="absent_error")
             # L_k = T_k * present_error + λ (1 - T_k) * absent_error
             L = tf.add(T * present_error, self.lambda_ * (1.0 - T) * absent_error, name="L")
             return tf.reduce_mean(tf.reduce_sum(L, axis=1), name="margin_loss")
@@ -314,7 +319,7 @@ class CapsNetwork(object):
                 X_batch =  x_test[batch_index:batch_index+batch_size-1]
                 y_batch = y_test[batch_index:batch_index+batch_size-1]
                 loss_test, acc_test = sess.run([self.loss, self.accuracy],
-                    feed_dict={self._X_raw: X_batch.reshape([-1, 28, 28, 1]),
+                    feed_dict={self._X_raw: X_batch,
                                self.y: y_batch})
                 loss_tests.append(loss_test)
                 acc_tests.append(acc_test)

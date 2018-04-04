@@ -5,9 +5,10 @@ import tensorflow as tf
 class CapsDecoder(object):
     n_hidden1 = 512
     n_hidden2 = 1024
-    n_output = 28 * 28
+    #n_output = 28 * 28
 
-    def __init__(self, caps_network: "CapsNetwork"):
+    def __init__(self, caps_network: "CapsNetwork", n_output : int):
+        self.n_output = n_output
         self.caps_network = caps_network
         self.mask_with_labels = tf.placeholder_with_default(False, shape=(), name="mask_with_labels")
         self.decoder_input = self.build_decoder_input()

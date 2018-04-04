@@ -1,2 +1,2 @@
-model_checkpoint_path: "mnist_fashion"
-all_model_checkpoint_paths: "mnist_fashion"
+model_checkpoint_path: "mushrooms"
+all_model_checkpoint_paths: "mushrooms"
