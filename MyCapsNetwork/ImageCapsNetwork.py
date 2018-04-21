@@ -107,23 +107,24 @@ class ImageCapsNetwork(object):
         img = self.ds.x_test[0]
         img = img.reshape(28, 28)
 
-        n_samples = 6
+        n_samples = 8
         sample_images = np.zeros(shape=(n_samples, 28, 28, 1))
 
-        angle = 90
-        for i in range(3):
+        angle = -22.5
+        for i in range(4):
             M = cv2.getRotationMatrix2D((28/2,28/2),angle,1)
             dst = cv2.warpAffine(img,M,(28,28))
             dst = dst.reshape([28, 28, 1])
             sample_images[i] = dst
-            angle += 90
+            angle += 22.5
 
-        for i in range(3):
+        angle = -22.5
+        for i in range(4):
             M = cv2.getRotationMatrix2D((28/2,28/2),angle,0.5)
             dst = cv2.warpAffine(img,M,(28,28))
             dst = dst.reshape([28, 28, 1])
-            sample_images[i+3] = dst
-            angle += 90
+            sample_images[i+4] = dst
+            angle += 22.5
 
         caps2_output_value, decoder_output_value, y_pred_value = self.caps_network.predict_and_reconstruct(sample_images)
 
