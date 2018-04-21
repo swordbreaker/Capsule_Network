@@ -25,11 +25,11 @@ class CapsNetwork(object):
     # other
     routing_by_agreement_iterations = 2
 
-    def __init__(self, X: tf.Tensor, X_raw: tf.Tensor, checkpoint_path: str, caps1_caps=1152, caps1_vec_norm = 8, caps2_caps = 10, caps2_vec_norm = 16, decoder_output=784):
+    def __init__(self, X: tf.Tensor, X_raw: tf.Tensor, checkpoint_path: str, caps1_caps=1152, caps1_vec_norm = 8, caps2_caps = 10, caps2_vec_dim = 16, decoder_output=784):
         self.caps1_caps = caps1_caps
         self.caps1_vec_norm = caps1_vec_norm
         self.caps2_caps = caps2_caps
-        self.caps2_vec_norm = caps2_vec_norm
+        self.caps2_vec_norm = caps2_vec_dim
         
         self._X_raw = X_raw
         self.checkpoint_path = checkpoint_path
@@ -45,17 +45,29 @@ class CapsNetwork(object):
 
         self.y = tf.placeholder(shape=[None], dtype=tf.int64, name="y")
 
+        self.mask_with_labels = tf.placeholder_with_default(False, shape=(), name="mask_with_labels")
+        self.caps2_output_shifted = tf.placeholder_with_default(np.zeros(caps2_vec_dim, dtype=np.float32),shape=[caps2_vec_dim])
+
         self.caps2_predicted = tf.matmul(self.W_tiled, caps1_output_tiled, name="caps2_predicted")
+        tf.summary.tensor_summary("caps2_predicted", self.caps2_predicted)
         self.caps2_output = self.__routing_by_agreement()
+        tf.summary.tensor_summary("caps2_output", self.caps2_output)
+        print(self.caps2_output)
+        caps2_output_shifted_tiled = tf.reshape(self.caps2_output_shifted, (1,1,1,16,1))
+        self.caps2_output = tf.add(self.caps2_output, caps2_output_shifted_tiled)
         self.y_pred = self.__predict()
         self.margin_loss = self.__calc_margin_loss()
         self.decoder = CapsDecoder(self, decoder_output)
         self.loss = self.__calc_loss()
+        tf.summary.scalar('loss', self.loss)
         self.accuracy = self.__calc_accuracy()
+        tf.summary.scalar('accuracy', self.accuracy)
         self.training_optimizer = self.__build_optimizer()
 
         self.init = tf.global_variables_initializer()
         self.saver = tf.train.Saver()
+
+        self.merge = tf.summary.merge_all()
 
     def __init_W(self):
         with tf.name_scope('init_W'):
@@ -261,19 +273,18 @@ class CapsNetwork(object):
                     y_batch = y_train[batch_index:batch_index+batch_size-1]
 
                     # Run the training operation and measure the loss:
-                    _, loss_train = sess.run([self.training_optimizer, self.loss],
-                        #feed_dict={self._X_raw: X_batch.reshape([-1, 28, 28, 1]), #Todo make the reshape in the ImageCapsnetwork
+                    _, loss_train, summary = sess.run([self.training_optimizer, self.loss, self.merge],
                         feed_dict={self._X_raw: X_batch,
                                    self.y: y_batch,
                                    self.decoder.mask_with_labels: True})
 
-                    tf.summary.scalar('loss', self.loss)
-
+                    
                     print("\rIteration: {}/{} ({:.1f}%)  Loss: {:.5f}".format(iteration, n_iterations_per_epoch,
                         iteration * 100 / n_iterations_per_epoch,
                         loss_train),
                         end="")
                     batch_index += batch_size
+                writer.add_summary(summary, epoch)
 
                 # At the end of each epoch,
                 # measure the validation loss and accuracy:
@@ -303,7 +314,6 @@ class CapsNetwork(object):
                     save_path = self.saver.save(sess, self.checkpoint_path)
                     best_loss_val = loss_val
 
-            merge = tf.summary.merge_all()
             writer.close()
 
     def eval(self, x_test, y_test, batch_size=50):
@@ -339,6 +349,25 @@ class CapsNetwork(object):
                            self.y: np.array([], dtype=np.int64)})
 
         return caps2_output_value, decoder_output_value, y_pred_value
+
+
+    def recunstruct_shifted(self, x, y, shift):
+        with tf.Session() as sess:
+            self.saver.restore(sess, self.checkpoint_path)
+            caps2_output_value, manipulated_decoder_output_value, y_pred_value = sess.run([self.caps2_output, self.decoder.decoder_output, self.y_pred],
+                feed_dict={self._X_raw: x,
+                           self.y: y,
+                           self.caps2_output_shifted: shift,
+                           self.decoder.mask_with_labels: True})
+
+        #print("caps2_output_value")
+        #print(caps2_output_value.shape)
+        #print(caps2_output_value[0,0,0])
+        #print("Mainipulated")
+        #print(caps2_output_value_manipulated.shape)
+        #print(caps2_output_value_manipulated[0,0,0])
+
+        return caps2_output_value, manipulated_decoder_output_value, y_pred_value
 
     @staticmethod
     def squash(s, axis=-1, epsilon=1e-7, name=None):

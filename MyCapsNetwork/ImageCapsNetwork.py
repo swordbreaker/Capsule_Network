@@ -5,6 +5,8 @@ import tensorflow as tf
 import matplotlib
 import matplotlib.pyplot as plt
 import cv2
+import time
+import os
 
 class ImageCapsNetwork(object):
     """description of class"""
@@ -38,7 +40,9 @@ class ImageCapsNetwork(object):
             "activation": tf.nn.relu
         }
         conv1 = tf.layers.conv2d(X, name="conv1", **conv1_params)
+        tf.summary.tensor_summary("conv1", conv1)
         conv2 = tf.layers.conv2d(conv1, name="conv2", **conv2_params)
+        tf.summary.tensor_summary("conv2", conv2)
 
         caps1_raw = tf.reshape(conv2, [-1, caps1_n_caps, caps1_n_dims], name="caps1_raw")
         return CapsNetwork(caps1_raw, X, checkpoint_path)
@@ -103,8 +107,52 @@ class ImageCapsNetwork(object):
         plt.show(block=False)
         plt.show()
 
-    def transform_images_and_plot(self, labels: [str]):
-        img = self.ds.x_test[0]
+    def manipulated_and_reconstruct(self, labels: [str], n_samples = 5):
+        x = self.ds.x_test[6].reshape([1, 28, 28, 1])
+        y = self.ds.y_test[6].reshape([-1])
+
+        str_time = f"{time.strftime('%Y_%m_%d_%H_%M_%S')}"
+        path = f"Results/mnist_fashion_reconstruct_{str_time}"
+        os.makedirs(path)
+
+
+        for k in range(16):
+            shift = np.zeros((16))
+            shift[k] = -0.25
+
+            plt.figure()
+
+            for i in range(11):
+                caps2_output_value, decoder_output_value, y_pred_value = self.caps_network.recunstruct_shifted(x, y, shift)
+            
+                reconstructions = decoder_output_value.reshape([-1, 28, 28])
+                plt.subplot(1, 11, i + 1)
+                plt.imshow(reconstructions[0], cmap="binary")
+                plt.axis("off")
+
+                shift[0] += 0.5
+            plt.savefig(f"{path}/{k}.png")
+
+        #sample_images = sample_images.reshape(-1, 28, 28)
+        #reconstructions = decoder_output_value.reshape([-1, 28, 28])
+
+        
+        #for i in range(n_samples):
+        #    plt.subplot(2, n_samples, i + 1)
+        #    plt.imshow(sample_images[i], cmap="binary")
+        #    plt.title("Label:" + labels[self.ds.y_test[i]])
+        #    plt.axis("off")
+
+        #for i in range(n_samples):
+        #    plt.subplot(2, n_samples, n_samples + i + 1)
+        #    plt.title(labels[y_pred_value[i]])
+        #    plt.imshow(reconstructions[i], cmap="binary")
+        #    plt.axis("off")
+
+        
+
+    def transform_images_and_plot(self, labels: [str], id = 0):
+        img = self.ds.x_test[id]
         img = img.reshape(28, 28)
 
         n_samples = 8
