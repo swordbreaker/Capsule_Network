@@ -1,0 +1,13 @@
+0: Breite
+1: Grösse Holraum <--
+2: Schärfe kante
+
+4: Dicke hosen Bein
+
+5 + 6: Rundungen der Hosen?
+
+8: Grösse <--
+9: (Helligkeit)
+10: Grösse <--
+
+14: Helligkeit

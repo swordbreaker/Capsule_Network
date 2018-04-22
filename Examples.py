@@ -18,7 +18,7 @@ def one_hot_encode(data) -> np.ndarray:
     integer_encoded = integer_encoded.reshape(len(integer_encoded), 1)
     return onehot_encoder.fit_transform(integer_encoded)
 
-def mnist(train=True, eval=True, restore_checkpoint=True):
+def mnist(train=True, eval=True, restore_checkpoint=True, reconstruct=False, transform=False):
     labels = [str(i) for i in range(10)]
     data = input_data.read_data_sets("/tmp/data/")
     data_set = DataSet.fromtf(data)
@@ -28,9 +28,12 @@ def mnist(train=True, eval=True, restore_checkpoint=True):
     if eval:
         img_caps_net.eval()
     #img_caps_net.plot_solution(labels, n_samples=10)
-    img_caps_net.transform_images_and_plot(labels)
+    if transform:
+        img_caps_net.transform_images_and_plot(labels)
+    if reconstruct:
+        img_caps_net.manipulated_and_reconstruct(labels, "mnist_reconstruct", 2)
 
-def mnist_fashion(train=True, eval=True, restore_checkpoint=True, epochs=2):
+def mnist_fashion(train=True, eval=True, restore_checkpoint=True, reconstruct=False, transform=False, epochs=2):
     data = input_data.read_data_sets('data/fashion')
 
     labels = ["T-shirt/top",
@@ -54,8 +57,10 @@ def mnist_fashion(train=True, eval=True, restore_checkpoint=True, epochs=2):
     #for i in range(10):
     #    img_caps_net.plot_from_category(labels, i, n_samples=10)
 
-    #img_caps_net.transform_images_and_plot(labels, 2)
-    #img_caps_net.manipulated_and_reconstruct(labels, 5)
+    if transform:
+        img_caps_net.transform_images_and_plot(labels, 3)
+    if reconstruct:
+        img_caps_net.manipulated_and_reconstruct(labels, "mnist_fashion_reconstruct", 6)
 
 
 def mushroom_example(train=True, eval=True, restore_checkpoint=True, epochs=2, batch_size = 100):

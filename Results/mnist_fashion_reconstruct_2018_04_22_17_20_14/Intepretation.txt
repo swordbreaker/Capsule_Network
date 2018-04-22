@@ -1,0 +1,13 @@
+0: 
+1: Grösse Holraum (Blur) <--
+2: Helligkeit (Farbe, Stoff)
+3: 
+
+5+6: Rundungen 
+
+8: Grösse <--
+
+9: Mit muster ohne
+10: Grösse <--
+
+12: Helligkeit

@@ -107,14 +107,13 @@ class ImageCapsNetwork(object):
         plt.show(block=False)
         plt.show()
 
-    def manipulated_and_reconstruct(self, labels: [str], n_samples = 5):
-        x = self.ds.x_test[6].reshape([1, 28, 28, 1])
-        y = self.ds.y_test[6].reshape([-1])
+    def manipulated_and_reconstruct(self, labels: [str], log_name, id = 0):
+        x = self.ds.x_test[id].reshape([1, 28, 28, 1])
+        y = self.ds.y_test[id].reshape([-1])
 
         str_time = f"{time.strftime('%Y_%m_%d_%H_%M_%S')}"
-        path = f"Results/mnist_fashion_reconstruct_{str_time}"
+        path = f"Results/{log_name}_{labels[y[0]]}_{str_time}"
         os.makedirs(path)
-
 
         for k in range(16):
             shift = np.zeros((16))
@@ -127,29 +126,12 @@ class ImageCapsNetwork(object):
             
                 reconstructions = decoder_output_value.reshape([-1, 28, 28])
                 plt.subplot(1, 11, i + 1)
+                plt.title(f"{shift[k]:1.2f}")
                 plt.imshow(reconstructions[0], cmap="binary")
                 plt.axis("off")
 
-                shift[0] += 0.5
+                shift[k] += 0.05
             plt.savefig(f"{path}/{k}.png")
-
-        #sample_images = sample_images.reshape(-1, 28, 28)
-        #reconstructions = decoder_output_value.reshape([-1, 28, 28])
-
-        
-        #for i in range(n_samples):
-        #    plt.subplot(2, n_samples, i + 1)
-        #    plt.imshow(sample_images[i], cmap="binary")
-        #    plt.title("Label:" + labels[self.ds.y_test[i]])
-        #    plt.axis("off")
-
-        #for i in range(n_samples):
-        #    plt.subplot(2, n_samples, n_samples + i + 1)
-        #    plt.title(labels[y_pred_value[i]])
-        #    plt.imshow(reconstructions[i], cmap="binary")
-        #    plt.axis("off")
-
-        
 
     def transform_images_and_plot(self, labels: [str], id = 0):
         img = self.ds.x_test[id]
