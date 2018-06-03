@@ -1,7 +1,10 @@
 {
   "ExpandedNodes": [
     "",
+    "\\logs",
+    "\\MyCapsNetwork",
     "\\Other"
   ],
+  "SelectedNode": "\\logs",
   "PreviewInSolutionExplorer": false
 }
