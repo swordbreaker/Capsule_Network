@@ -1,0 +1,22 @@
+Iteration: 550/550 (100.0%)  Loss: 0.02181 Epoch time: 742.1520318984985
+Iteration: 550/550 (100.0%)  Loss: 0.01527 Epoch time: 745.9872283935547
+Iteration: 550/550 (100.0%)  Loss: 0.01242 Epoch time: 726.3373663425446
+Iteration: 550/550 (100.0%)  Loss: 0.01090 Epoch time: 727.1224772930145
+Iteration: 550/550 (100.0%)  Loss: 0.00888 Epoch time: 731.9359903335571
+Iteration: 550/550 (100.0%)  Loss: 0.00779 Epoch time: 731.0312926769257
+Iteration: 550/550 (100.0%)  Loss: 0.00691 Epoch time: 730.5558581352234
+Iteration: 550/550 (100.0%)  Loss: 0.00700 Epoch time: 735.5782248973846
+Iteration: 550/550 (100.0%)  Loss: 0.00583 Epoch time: 724.3952918052673
+Iteration: 550/550 (100.0%)  Loss: 0.00609 Epoch time: 725.4257814884186
+
+
+Epoch: 1  Val accuracy: 98.5859%  Loss: 0.018459 (improved)
+Epoch: 2  Val accuracy: 98.9899%  Loss: 0.012688 (improved)
+Epoch: 3  Val accuracy: 99.1717%  Loss: 0.010296 (improved)
+Epoch: 4  Val accuracy: 99.2323%  Loss: 0.009046 (improved)
+Epoch: 5  Val accuracy: 99.1515%  Loss: 0.008542 (improved)
+Epoch: 6  Val accuracy: 99.2323%  Loss: 0.008408 (improved)
+Epoch: 7  Val accuracy: 99.1717%  Loss: 0.008043 (improved)
+Epoch: 8  Val accuracy: 99.2121%  Loss: 0.007578 (improved)
+Epoch: 9  Val accuracy: 99.2929%  Loss: 0.007414 (improved)
+Epoch: 10 Val accuracy: 99.3737%  Loss:0.007274 (improved)

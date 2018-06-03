@@ -18,13 +18,13 @@ def one_hot_encode(data) -> np.ndarray:
     integer_encoded = integer_encoded.reshape(len(integer_encoded), 1)
     return onehot_encoder.fit_transform(integer_encoded)
 
-def mnist(train=True, eval=True, restore_checkpoint=True, reconstruct=False, transform=False):
+def mnist(train=True, eval=True, restore_checkpoint=True, reconstruct=False, transform=False, epochs=10):
     labels = [str(i) for i in range(10)]
     data = input_data.read_data_sets("/tmp/data/")
     data_set = DataSet.fromtf(data)
-    img_caps_net = ImageCapsNetwork(data_set, "./my_capsule_network")
+    img_caps_net = ImageCapsNetwork(data_set, "./my_capsule_network2")
     if train:
-        img_caps_net.train(epochs=2, batch_size=100, restore_checkpoint=restore_checkpoint)
+        img_caps_net.train(epochs=epochs, batch_size=100, restore_checkpoint=restore_checkpoint)
     if eval:
         img_caps_net.eval()
     #img_caps_net.plot_solution(labels, n_samples=10)

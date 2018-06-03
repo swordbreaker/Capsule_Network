@@ -33,7 +33,7 @@ class ConvNetwork(object):
 
         return model
 
-    def fit(self, x_train, y_train, x_val, y_val, batch_size=200, epochs=5, verbose=1):
+    def fit(self, x_train, y_train, x_val, y_val, batch_size=100, epochs=5, verbose=1):
         self.model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, verbose=verbose, validation_data=(x_val, y_val))
 
     def eval(self, x_val, y_val):
