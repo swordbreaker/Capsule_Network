@@ -117,20 +117,20 @@ class ImageCapsNetwork(object):
 
         for k in range(16):
             shift = np.zeros((16))
-            shift[k] = -0.25
+            shift[k] = -0.20
 
             plt.figure()
 
-            for i in range(11):
+            for i in range(5):
                 caps2_output_value, decoder_output_value, y_pred_value = self.caps_network.recunstruct_shifted(x, y, shift)
             
                 reconstructions = decoder_output_value.reshape([-1, 28, 28])
-                plt.subplot(1, 11, i + 1)
+                plt.subplot(1, 5, i + 1)
                 plt.title(f"{shift[k]:1.2f}")
                 plt.imshow(reconstructions[0], cmap="binary")
                 plt.axis("off")
 
-                shift[k] += 0.05
+                shift[k] += 0.10
             plt.savefig(f"{path}/{k}.png")
 
     def transform_images_and_plot(self, labels: [str], id = 0):

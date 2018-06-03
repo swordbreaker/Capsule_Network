@@ -60,7 +60,7 @@ def mnist_fashion(train=True, eval=True, restore_checkpoint=True, reconstruct=Fa
     if transform:
         img_caps_net.transform_images_and_plot(labels, 3)
     if reconstruct:
-        img_caps_net.manipulated_and_reconstruct(labels, "mnist_fashion_reconstruct", 6)
+        img_caps_net.manipulated_and_reconstruct(labels, "mnist_fashion_reconstruct", 0)
 
 
 def mushroom_example(train=True, eval=True, restore_checkpoint=True, epochs=2, batch_size = 100):
