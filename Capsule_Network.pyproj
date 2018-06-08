@@ -52,12 +52,14 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Ticketing\__init__.py" />
+    <Compile Include="VGG_Like\VGGLike.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="__init__.py" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="CNN\CNN.pyproj" />
     <Content Include="CNN\CNN.pyproj.user" />
-    <Content Include="CNN\model.hdf5" />
     <Content Include="CNN\__pycache__\ConvNetwork.cpython-36.pyc" />
     <Content Include="Other\Capsule_Network_routing_by_agreement.png" />
     <Content Include="Other\Capsule_Network_routing_by_agreement.svg" />
@@ -69,6 +71,7 @@
     <Folder Include="CNN\" />
     <Folder Include="CNN\__pycache__\" />
     <Folder Include="MyCapsNetwork" />
+    <Folder Include="VGG_Like\" />
     <Folder Include="Ticketing\" />
     <Folder Include="Other" />
   </ItemGroup>

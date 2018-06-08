@@ -1,14 +1,10 @@
 import numpy as np
 import tensorflow as tf
-from MyCapsNetwork.CapsDecoder import *
+from MyCapsNetwork.CapsDecoder import *            
+import time
 
 
 class CapsNetwork(object):
-    # primary capsules
-    #caps1_maps = 32
-    #caps1_caps = caps1_maps * 6 * 6  # 1152 primary capsules
-    #caps1_vec_norm = 8
-
     # digit capsules
     caps2_caps = 10
     caps2_vec_norm = 16
@@ -49,9 +45,9 @@ class CapsNetwork(object):
         self.caps2_output_shifted = tf.placeholder_with_default(np.zeros(caps2_vec_dim, dtype=np.float32),shape=[caps2_vec_dim])
 
         self.caps2_predicted = tf.matmul(self.W_tiled, caps1_output_tiled, name="caps2_predicted")
-        tf.summary.tensor_summary("caps2_predicted", self.caps2_predicted)
+        #tf.summary.tensor_summary("caps2_predicted", self.caps2_predicted)
         self.caps2_output = self.__routing_by_agreement()
-        tf.summary.tensor_summary("caps2_output", self.caps2_output)
+        #tf.summary.tensor_summary("caps2_output", self.caps2_output)
         print(self.caps2_output)
         caps2_output_shifted_tiled = tf.reshape(self.caps2_output_shifted, (1,1,1,16,1))
         self.caps2_output = tf.add(self.caps2_output, caps2_output_shifted_tiled)
@@ -87,8 +83,6 @@ class CapsNetwork(object):
 
 
     def __routing_by_agreement(self):
-        # TODO make a loop
-
         with tf.name_scope('routing_by_agreement'):
             # 2: b_ij
             raw_weigts = tf.zeros([self.batch_size, self.caps1_caps, self.caps2_caps, 1, 1], dtype=np.float32,
@@ -116,6 +110,12 @@ class CapsNetwork(object):
             caps2_output_round_2 = self.squash(weighted_sum_round_2, axis=-2, name="caps2_output_round_2")
 
             return caps2_output_round_2
+
+
+
+
+
+
 
     def __routing_by_agreement2(self):
             #def condition(input, counter):
@@ -253,7 +253,7 @@ class CapsNetwork(object):
         with tf.Session() as sess:
             print(sess.run(result))
 
-    def train(self, x_train: np.ndarray, y_train : np.ndarray, x_val : np.ndarray, y_val : np.ndarray, epochs: int, batch_size: int=50, restore_checkpoint=True):
+    def train(self, x_train: np.ndarray, y_train : np.ndarray, x_val : np.ndarray, y_val : np.ndarray, epochs: int, batch_size: int=100, restore_checkpoint=True):
         n_iterations_per_epoch = x_train.shape[0] // batch_size
         n_iterations_validation = x_val.shape[0] // batch_size
         best_loss_val = np.infty
@@ -265,8 +265,9 @@ class CapsNetwork(object):
                 self.init.run()
 
             writer = tf.summary.FileWriter("./logs", sess.graph)
-            
+
             for epoch in range(epochs):
+                start = time.time()
                 batch_index = 0
                 for iteration in range(1, n_iterations_per_epoch + 1):
                     X_batch = x_train[batch_index:batch_index+batch_size-1]
@@ -286,6 +287,10 @@ class CapsNetwork(object):
                     batch_index += batch_size
                 writer.add_summary(summary, epoch)
 
+                end = time.time()
+                diff = end - start;
+                print(f"Epoch time: {diff}");
+
                 # At the end of each epoch,
                 # measure the validation loss and accuracy:
                 batch_index = 0
@@ -295,7 +300,6 @@ class CapsNetwork(object):
                     X_batch = x_val[batch_index:batch_index+batch_size-1]
                     y_batch = y_val[batch_index:batch_index+batch_size-1]
                     loss_val, acc_val = sess.run([self.loss, self.accuracy],
-                        #feed_dict={self._X_raw: X_batch.reshape([-1, 28, 28, 1]),
                         feed_dict={self._X_raw: X_batch,
                                    self.y: y_batch})
                     loss_vals.append(loss_val)
