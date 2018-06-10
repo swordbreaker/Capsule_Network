@@ -24,12 +24,23 @@ def mnist(train=True, eval=True, restore_checkpoint=True, reconstruct=False, tra
     data_set = DataSet.fromtf(data)
     img_caps_net = ImageCapsNetwork(data_set, "./my_capsule_network2")
     if train:
-        img_caps_net.train(epochs=epochs, batch_size=100, restore_checkpoint=restore_checkpoint)
+        img_caps_net.train(epochs=epochs, batch_size=200, restore_checkpoint=restore_checkpoint)
     if eval:
         img_caps_net.eval()
     #img_caps_net.plot_solution(labels, n_samples=10)
     if transform:
+        #img_caps_net.noise_all()
+        #img_caps_net.noise_images_and_plot(labels)
         img_caps_net.transform_images_and_plot(labels)
+        #print("30° ")
+        #img_caps_net.mnist_transform_all(30)
+        #print("40° ")
+        #img_caps_net.mnist_transform_all(40)
+        #print("50° ")
+        #img_caps_net.mnist_transform_all(50)
+        #print("90° ")
+        #img_caps_net.mnist_transform_all(90)
+        #print(f"transform accuracy: {img_caps_net.mnist_transform_all()}")
     if reconstruct:
         img_caps_net.manipulated_and_reconstruct(labels, "mnist_reconstruct", 2)
 
@@ -48,7 +59,10 @@ def mnist_fashion(train=True, eval=True, restore_checkpoint=True, reconstruct=Fa
         "Ankle boot"]
 
     data_set = DataSet.fromtf(data)
-    img_caps_net = ImageCapsNetwork(data_set, "./mnist_fashion2")
+    data_set.x_train = data_set.x_train[:5000]
+    data_set.y_train =  data_set.y_train[:5000]
+
+    img_caps_net = ImageCapsNetwork(data_set, "./checkpoints/mnist_fashion")
     if train:
         img_caps_net.train(epochs=epochs, batch_size=100, restore_checkpoint=True)
     if eval:

@@ -7,6 +7,31 @@ import matplotlib.pyplot as plt
 import cv2
 import time
 import os
+import keras
+
+def transform(img, angle=30):
+    n_samples = 3
+    sample_images = np.zeros(shape=(n_samples, 28, 28, 1))
+
+    angle_step = angle
+
+    angle = -angle_step
+    for i in range(3):
+        M = cv2.getRotationMatrix2D((28/2,28/2),angle,1)
+        dst = cv2.warpAffine(img,M,(28,28))
+        dst = dst.reshape([28, 28, 1])
+        sample_images[i] = dst
+        angle += angle_step
+
+    #angle = -angle_step
+    #for i in range(4):
+    #    M = cv2.getRotationMatrix2D((28/2,28/2),angle,0.5)
+    #    dst = cv2.warpAffine(img,M,(28,28))
+    #    dst = dst.reshape([28, 28, 1])
+    #    sample_images[i+4] = dst
+    #    angle += angle_step
+
+    return sample_images
 
 class ImageCapsNetwork(object):
     """description of class"""
@@ -137,24 +162,24 @@ class ImageCapsNetwork(object):
         img = self.ds.x_test[id]
         img = img.reshape(28, 28)
 
-        n_samples = 8
+        n_samples = 6
         sample_images = np.zeros(shape=(n_samples, 28, 28, 1))
 
-        angle = -22.5
-        for i in range(4):
+        angle = -30
+        for i in range(3):
             M = cv2.getRotationMatrix2D((28/2,28/2),angle,1)
             dst = cv2.warpAffine(img,M,(28,28))
             dst = dst.reshape([28, 28, 1])
             sample_images[i] = dst
-            angle += 22.5
+            angle += 30
 
-        angle = -22.5
-        for i in range(4):
+        angle = -30
+        for i in range(3):
             M = cv2.getRotationMatrix2D((28/2,28/2),angle,0.5)
             dst = cv2.warpAffine(img,M,(28,28))
             dst = dst.reshape([28, 28, 1])
-            sample_images[i+4] = dst
-            angle += 22.5
+            sample_images[i+3] = dst
+            angle += 30
 
         caps2_output_value, decoder_output_value, y_pred_value = self.caps_network.predict_and_reconstruct(sample_images)
 
@@ -166,6 +191,72 @@ class ImageCapsNetwork(object):
             plt.subplot(2, n_samples, i + 1)
             plt.imshow(sample_images[i], cmap="binary")
             plt.title("Label:" + labels[self.ds.y_test[0]])
+            plt.axis("off")
+
+        for i in range(n_samples):
+            plt.subplot(2, n_samples, n_samples + i + 1)
+            plt.title(labels[y_pred_value[i]])
+            plt.imshow(reconstructions[i], cmap="binary")
+            plt.axis("off")
+
+        plt.show()
+
+    def mnist_transform_all(self, angle):
+        num_samples = 3
+        sample_images = np.zeros(shape=(self.ds.x_test.shape[0] * num_samples, 28, 28, 1))
+        labels = np.zeros((self.ds.x_test.shape[0] * num_samples))
+
+        k = 0
+        for i in range(0, self.ds.x_test.shape[0]):
+            img = self.ds.x_test[i]
+            img = img.reshape(28, 28)
+
+            sample_images[k:k+num_samples] = transform(img, angle)
+            labels[k:k+num_samples] = np.repeat(self.ds.y_test[i], num_samples)
+            k += num_samples
+
+        self.caps_network.eval(sample_images, labels, 500)
+
+
+    def noise_all(self):
+        mean = 0
+        var = 0.2
+        sigma = var**0.5
+        gauss = np.random.normal(mean,sigma,(28,28,1))
+        gauss = gauss.reshape(28*28)
+
+        sample_images = self.ds.x_test + gauss
+        sample_images = sample_images.reshape(-1, 28,28,1)
+
+        self.caps_network.eval(sample_images, self.ds.y_test, 500)
+
+
+    def noise_images_and_plot(self, labels: [str]):
+        n_samples = 3
+        img = self.ds.x_test[:n_samples]
+
+        mean = 0
+        var = 0.1
+        sigma = var**0.5
+        gauss = np.random.normal(mean,sigma,(28,28,1))
+        gauss = gauss.reshape(28*28)
+
+        for i in range(n_samples):
+            img[i] = img[i] + gauss
+
+        
+        img = img.reshape(-1, 28, 28, 1)
+
+        caps2_output_value, decoder_output_value, y_pred_value = self.caps_network.predict_and_reconstruct(img)
+
+        sample_images = img.reshape(-1, 28, 28)
+        reconstructions = decoder_output_value.reshape([-1, 28, 28])
+
+        plt.figure(figsize=(n_samples * 2, 6))
+        for i in range(n_samples):
+            plt.subplot(2, n_samples, i + 1)
+            plt.imshow(sample_images[i], cmap="binary")
+            plt.title("Label:" + labels[self.ds.y_test[i]])
             plt.axis("off")
 
         for i in range(n_samples):

@@ -38,9 +38,6 @@
     <Compile Include="MyCapsNetwork\ImageCapsNetwork.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Other\image_processing_test.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Other\Margin_loss.py" />
     <Compile Include="Other\SimpleCapsuleNetwork.py" />
     <Compile Include="Other\Softmax.py" />
@@ -68,9 +65,13 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="checkpoints\cnn\" />
+    <Folder Include="checkpoints\cnn_mnist\" />
+    <Folder Include="checkpoints\cnn_small\" />
     <Folder Include="CNN\" />
     <Folder Include="CNN\__pycache__\" />
     <Folder Include="MyCapsNetwork" />
+    <Folder Include="checkpoints\" />
     <Folder Include="VGG_Like\" />
     <Folder Include="Ticketing\" />
     <Folder Include="Other" />
